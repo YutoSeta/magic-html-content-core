@@ -19,6 +19,14 @@ final readonly class SchemaDefinition
         if ($displayName === '' || $fields === []) {
             throw new InvalidArgumentException('Schema display name and fields are required.');
         }
+        foreach ($fields as $name => $definition) {
+            if (! is_string($name) || ! preg_match('/^[a-z][a-z0-9_]{0,63}$/', $name) || ! is_array($definition)) {
+                throw new InvalidArgumentException('Field names must be lowercase snake_case and definitions must be objects.');
+            }
+            if (! in_array($definition['type'] ?? 'string', ['string', 'text', 'number', 'boolean', 'array', 'object', 'media', 'reference', 'select'], true)) {
+                throw new InvalidArgumentException("Unsupported field type for '{$name}'.");
+            }
+        }
     }
 
     public function toArray(): array

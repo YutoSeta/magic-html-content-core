@@ -38,6 +38,13 @@ final class SchemaValidator
             };
             if (! $valid) {
                 $errors["value.{$name}"] = "Value does not match type '{$type}'.";
+                continue;
+            }
+            foreach (($definition['constraints'] ?? []) as $constraint => $limit) {
+                $length = is_string($value[$name]) || is_array($value[$name]) ? count($value[$name]) : $value[$name];
+                if (($constraint === 'minLength' || $constraint === 'minItems' || $constraint === 'minimum') && $length < $limit) $errors["value.{$name}"] = "Value is below {$constraint}.";
+                if (($constraint === 'maxLength' || $constraint === 'maxItems' || $constraint === 'maximum') && $length > $limit) $errors["value.{$name}"] = "Value exceeds {$constraint}.";
+                if ($constraint === 'format' && $limit === 'email' && filter_var($value[$name], FILTER_VALIDATE_EMAIL) === false) $errors["value.{$name}"] = 'Value must be a valid email address.';
             }
         }
 
