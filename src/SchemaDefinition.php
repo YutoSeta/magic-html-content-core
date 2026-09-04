@@ -23,7 +23,7 @@ final readonly class SchemaDefinition
             if (! is_string($name) || ! preg_match('/^[a-z][a-z0-9_]{0,63}$/', $name) || ! is_array($definition)) {
                 throw new InvalidArgumentException('Field names must be lowercase snake_case and definitions must be objects.');
             }
-            if (! in_array($definition['type'] ?? 'string', ['string', 'text', 'number', 'boolean', 'array', 'object', 'media', 'reference', 'select'], true)) {
+            if (! in_array($definition['type'] ?? 'string', ['string', 'text', 'number', 'boolean', 'array', 'object', 'media', 'reference', 'select'], true) || (isset($definition['rules']) && ! is_array($definition['rules']))) {
                 throw new InvalidArgumentException("Unsupported field type for '{$name}'.");
             }
         }
